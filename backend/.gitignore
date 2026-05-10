@@ -1,0 +1,30 @@
+# Python (Arquivos compilados)
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Ambiente Virtual
+venv/
+.venv/
+env/
+ENV/
+
+# Variáveis de Ambiente 
+.env
+
+# Banco de Dados local
+*.db
+*.sqlite3
+
+# IDEs e Editores
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Docker
+pgdata/
