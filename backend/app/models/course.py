@@ -23,11 +23,16 @@ class CourseCreate(CourseBase):
 class CourseRead(CourseBase):
     id: int
     creator_id: int
+    creator_email: str
 
 class Course(CourseBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    creator_id: int = Field(foreign_key="user.id")
+    creator_id: int = Field(foreign_key="user.id", ondelete="CASCADE")
     
-    # Agora o VS Code entende o que é "User" e "Lesson"
     creator: "User" = Relationship(back_populates="courses")
-    lessons: List["Lesson"] = Relationship(back_populates="course")
+    lessons: List["Lesson"] = Relationship(back_populates="course", cascade_delete=True)
+ 
+    @property
+    def creator_email(self) -> str:
+        """Propriedade dinâmica que o FastAPI vai ler para preencher o CourseRead."""
+        return self.creator.email if self.creator else "email@desconhecido.com"

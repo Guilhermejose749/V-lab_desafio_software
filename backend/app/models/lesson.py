@@ -18,6 +18,7 @@ class LessonRead(LessonBase):
 
 class Lesson(LessonBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
+    # Cascata do curso para a aula
+    course_id: int = Field(foreign_key="course.id", ondelete="CASCADE")
     
-    # Agora o VS Code entende o que é "Course"
     course: "Course" = Relationship(back_populates="lessons")
