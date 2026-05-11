@@ -37,7 +37,7 @@ def seed_db():
                 db.add(user)
                 db.commit()
                 db.refresh(user)
-                print(f"👤 Usuário {user.name} criado.")
+                print(f"Usuário {user.name} criado.")
 
             # Gerar de 0 a 5 cursos para este usuário
             num_courses = random.randint(0, 5)
