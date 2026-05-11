@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { SubmitEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../../services/api';
+import './Register.css';
 
 export default function Register() {
   const [name, setName] = useState('');
@@ -16,7 +17,6 @@ export default function Register() {
     e.preventDefault();
     setError('');
     
-    // Validação básica de tamanho de senha solicitada no edital
     if (password.length < 6) {
       setError('A senha deve ter pelo menos 6 caracteres.');
       return;
@@ -25,16 +25,9 @@ export default function Register() {
     setLoading(true);
 
     try {
-      // Registro aceita JSON normal, igual configuramos no Pydantic
-      await api.post('/auth/register', {
-        name,
-        email,
-        password
-      });
-      
+      await api.post('/auth/register', { name, email, password });
       alert('Usuário criado com sucesso! Faça login para continuar.');
       navigate('/login');
-      
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Erro ao registrar usuário.');
     } finally {
@@ -43,41 +36,53 @@ export default function Register() {
   };
 
   return (
-    <div style={{ maxWidth: '400px', margin: '50px auto', fontFamily: 'sans-serif' }}>
-      <h2>Registrar Novo Usuário</h2>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      
-      <form onSubmit={handleRegister} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-        <input 
-          type="text" 
-          placeholder="Seu nome completo" 
-          value={name} 
-          onChange={(e) => setName(e.target.value)} 
-          required 
-        />
-        <input 
-          type="email" 
-          placeholder="Seu email" 
-          value={email} 
-          onChange={(e) => setEmail(e.target.value)} 
-          required 
-        />
-        <input 
-          type="password" 
-          placeholder="Sua senha (min 6 caracteres)" 
-          value={password} 
-          onChange={(e) => setPassword(e.target.value)} 
-          required 
-          minLength={6}
-        />
-        <button type="submit" disabled={loading}>
-          {loading ? 'Cadastrando...' : 'Registrar'}
-        </button>
-      </form>
+    <div className="auth-wrapper">
+      <div className="auth-card">
+        <h2 className="auth-title">Registrar</h2>
+        
+        <p className="error-message">{error}</p>
+        
+        <form className="auth-form" onSubmit={handleRegister}>
+          <div className="input-wrapper">
+            <input 
+              className="auth-input"
+              type="text" 
+              placeholder="Seu nome completo" 
+              value={name} 
+              onChange={(e) => setName(e.target.value)} 
+              required 
+            />
+          </div>
+          <div className="input-wrapper">
+            <input 
+              className="auth-input"
+              type="email" 
+              placeholder="Seu email" 
+              value={email} 
+              onChange={(e) => setEmail(e.target.value)} 
+              required 
+            />
+          </div>
+          <div className={`input-wrapper ${error ? 'has-error' : ''}`}>
+            <input 
+              className="auth-input"
+              type="password" 
+              placeholder="Sua senha (min 6 caracteres)" 
+              value={password} 
+              onChange={(e) => setPassword(e.target.value)} 
+              required 
+              minLength={6}
+            />
+          </div>
+          <button className="auth-submit-btn" type="submit" disabled={loading}>
+            {loading ? 'Cadastrando...' : 'Registrar'}
+          </button>
+        </form>
 
-      <p style={{ marginTop: '20px' }}>
-        Já tem uma conta? <Link to="/login">Voltar para o Login</Link>
-      </p>
+        <p className="auth-footer-link">
+          Já tem uma conta? <Link to="/login">Voltar para o Login</Link>
+        </p>
+      </div>
     </div>
   );
 }
