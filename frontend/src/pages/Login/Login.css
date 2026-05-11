@@ -83,3 +83,13 @@
 }
 .auth-footer-link a:hover { text-decoration: underline; }
 
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active {
+    /* Atrasa a aparição da cor de fundo em 5000 segundos, mantendo transparente */
+    transition: background-color 5000s ease-in-out 0s;
+    
+    /* Garante que o texto preenchido continue branco, como nossa variável */
+    -webkit-text-fill-color: var(--text-light) !important;
+}
