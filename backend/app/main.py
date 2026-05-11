@@ -26,7 +26,7 @@ def read_root():
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"], # URL do frontend
+    allow_origins=["*"], # aceita local ou do vercel
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

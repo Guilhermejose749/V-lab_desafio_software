@@ -1,9 +1,10 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:8000/api', // URL do backend FastAPI
+  baseURL: 'https://coursesphere-backend-xxud.onrender.com/api', //porta no render
 });
 
+// ... resto do código continua igual ...
 // Interceptor: Antes de qualquer requisição sair, ele roda esse código para adicionar o token JWT
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('@CourseSphere:token');
