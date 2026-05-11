@@ -7,7 +7,7 @@ def test_register_user_success(client):
         "email": email,
         "password": "password123"
     }
-    response = client.post("/auth/register", json=payload)
+    response = client.post("/api/auth/register", json=payload)
     assert response.status_code in [200, 201]
     assert response.json()["email"] == email
 
@@ -16,23 +16,23 @@ def test_register_user_duplicate_email(client):
     payload = {"name": "User 1", "email": email, "password": "123"}
     
     # Primeira tentativa (sucesso)
-    client.post("/auth/register", json=payload)
+    client.post("/api/auth/register", json=payload)
     
     # Segunda tentativa com mesmo email (deve falhar)
-    response = client.post("/auth/register", json=payload)
+    response = client.post("/api/auth/register", json=payload)
     assert response.status_code == 400
 
 def test_login_success(client):
     email = f"login_{uuid.uuid4()}@teste.com"
-    client.post("/auth/register", json={"name": "Logar", "email": email, "password": "123"})
+    client.post("/api/auth/register", json={"name": "Logar", "email": email, "password": "123"})
     
-    response = client.post("/auth/login", data={"username": email, "password": "123"})
+    response = client.post("/api/auth/login", data={"username": email, "password": "123"})
     assert response.status_code == 200
     assert "access_token" in response.json()
 
 def test_login_wrong_password(client):
     email = f"wrong_{uuid.uuid4()}@teste.com"
-    client.post("/auth/register", json={"name": "Logar", "email": email, "password": "123"})
+    client.post("/api/auth/register", json={"name": "Logar", "email": email, "password": "123"})
     
     response = client.post("/auth/login", data={"username": email, "password": "senha_errada"})
     assert response.status_code in [400, 401]

@@ -12,32 +12,44 @@ def client():
 def owner_token(client):
     """Cria o usuário DONO e retorna os headers de autenticação"""
     email = f"owner_{uuid.uuid4()}@teste.com"
-    client.post("/auth/register", json={
+    
+    # Tenta registrar
+    res_reg = client.post("/auth/register", json={
         "name": "Dono do Curso", 
         "email": email, 
         "password": "password123"
     })
-    res = client.post("/auth/login", data={
+    assert res_reg.status_code in [200, 201], f"Erro ao registrar DONO: {res_reg.text}"
+    
+    # Tenta logar
+    res_login = client.post("/api/auth/login", data={
         "username": email, 
         "password": "password123"
     })
-    token = res.json()["access_token"]
+    assert res_login.status_code == 200, f"Erro no login DONO: {res_login.text}"
+    
+    token = res_login.json()["access_token"]
     return {"Authorization": f"Bearer {token}"}
 
 @pytest.fixture(scope="module")
 def intruder_token(client):
     """Cria o usuário INTRUSO e retorna os headers de autenticação"""
     email = f"intruso_{uuid.uuid4()}@teste.com"
-    client.post("/auth/register", json={
+    
+    res_reg = client.post("/api/auth/register", json={
         "name": "Intruso", 
         "email": email, 
         "password": "password123"
     })
-    res = client.post("/auth/login", data={
+    assert res_reg.status_code in [200, 201], f"Erro ao registrar INTRUSO: {res_reg.text}"
+    
+    res_login = client.post("/api/auth/login", data={
         "username": email, 
         "password": "password123"
     })
-    token = res.json()["access_token"]
+    assert res_login.status_code == 200, f"Erro no login INTRUSO: {res_login.text}"
+    
+    token = res_login.json()["access_token"]
     return {"Authorization": f"Bearer {token}"}
 
 @pytest.fixture(scope="module")
@@ -49,7 +61,8 @@ def setup_course(client, owner_token):
         "start_date": "2026-06-01",
         "end_date": "2026-06-10"
     }
-    res = client.post("/courses/", json=payload, headers=owner_token)
+    res = client.post("/api/courses/", json=payload, headers=owner_token)
+    assert res.status_code in [200, 201], f"Erro ao criar CURSO base: {res.text}"
     return res.json()["id"]
 
 @pytest.fixture(scope="module")
@@ -60,5 +73,6 @@ def setup_lesson(client, owner_token, setup_course):
         "status": "draft",
         "course_id": setup_course
     }
-    res = client.post("/lessons/", json=payload, headers=owner_token)
+    res = client.post("/api/lessons/", json=payload, headers=owner_token)
+    assert res.status_code in [200, 201], f"Erro ao criar AULA base: {res.text}"
     return res.json()["id"]
