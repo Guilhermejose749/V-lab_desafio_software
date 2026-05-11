@@ -1,0 +1,85 @@
+:root {
+  --primary-color: #8b5cf6; 
+  --secondary-color: #c026d3; 
+  --error-color: #ff4d4d; 
+  --text-light: #ffffff;
+}
+
+.auth-wrapper {
+  display: flex; justify-content: center; align-items: center; min-height: 100vh;
+  /* Troque a URL abaixo pela sua imagem de fundo */
+  background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=2000&auto=format&fit=crop') center/cover no-repeat;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+.auth-card {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  width: 100%; max-width: 400px; padding: 40px; border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  display: flex; flex-direction: column; align-items: center;
+}
+
+.auth-title {
+  color: var(--text-light); font-size: 24px; font-weight: 600; margin-bottom: 25px; margin-top: 0;
+  text-transform: uppercase; letter-spacing: 1px;
+}
+
+.auth-form { width: 100%; display: flex; flex-direction: column; gap: 20px; }
+
+.input-wrapper {
+  width: 100%; 
+  border: 1px solid transparent; 
+  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 4px;
+  transition: all 0.3s ease; 
+  padding: 10px 12px; 
+  box-sizing: border-box;
+}
+
+.input-wrapper.has-error {
+  border: 1px solid var(--error-color); 
+  background-color: rgba(255, 77, 77, 0.05); 
+}
+
+.auth-input {
+  width: 100%; 
+  background: transparent; 
+  border: none; 
+  outline: none;
+  color: var(--text-light); 
+  font-size: 15px; 
+  padding: 4px 0; 
+}
+
+.auth-input::placeholder { color: rgba(255, 255, 255, 0.7); }
+
+.error-message {
+  color: #ffb3b3; 
+  font-size: 14px; 
+  text-align: center; 
+  margin-bottom: 15px; 
+  font-weight: 600;
+  min-height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-submit-btn {
+  background-color: var(--text-light); color: var(--primary-color);
+  border: none; border-radius: 25px; padding: 12px; font-size: 15px; font-weight: bold;
+  cursor: pointer; margin-top: 15px; width: 100%; max-width: 180px; align-self: center;
+  transition: transform 0.2s;
+}
+
+.auth-submit-btn:hover:not(:disabled) { transform: translateY(-2px); }
+.auth-submit-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+.auth-footer-link {
+  color: var(--text-light); font-size: 13px; text-align: center; margin-top: 25px;
+}
+.auth-footer-link a {
+  color: var(--text-light); font-weight: bold; text-decoration: none;
+}
+.auth-footer-link a:hover { text-decoration: underline; }
+

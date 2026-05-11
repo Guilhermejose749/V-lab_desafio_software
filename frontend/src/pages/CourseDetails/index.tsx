@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import { AuthContext } from '../../contexts/AuthContext';
 import { type Course, type Lesson, type ExternalUser } from '../../interfaces';
+import './CourseDetails.css'; 
 
 export default function CourseDetails() {
   const { id } = useParams<{ id: string }>();
@@ -16,12 +17,14 @@ export default function CourseDetails() {
   const [lessonStatusFilter, setLessonStatusFilter] = useState<string>('');
   const [loading, setLoading] = useState(true);
 
-  // Estados para Criar/Editar Aula
+  // Controles de UI
   const [isAddingLesson, setIsAddingLesson] = useState(false);
   const [editingLessonId, setEditingLessonId] = useState<number | null>(null);
+  const [deletingLessonId, setDeletingLessonId] = useState<number | null>(null);
+  const [formError, setFormError] = useState('');
+  
   const [newLesson, setNewLesson] = useState({ title: '', status: 'draft', video_url: '', course_id: Number(id) });
 
-  // Função para buscar aulas isolada (usada após editar/excluir)
   const fetchLessons = useCallback(async () => {
     try {
       const res = await api.get(`/lessons/course/${id}${lessonStatusFilter ? `?status=${lessonStatusFilter}` : ''}`);
@@ -31,179 +34,221 @@ export default function CourseDetails() {
     }
   }, [id, lessonStatusFilter]);
 
-  // Função Unificada para Salvar (Criar ou Editar Aula)
   const handleSaveLesson = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFormError(''); // Limpa erros
+
+    if (newLesson.title.trim().length < 3) {
+      return setFormError("O título da aula precisa ter pelo menos 3 letras.");
+    }
+
     try {
-      if (editingLessonId) {
-        await api.patch(`/lessons/${editingLessonId}`, newLesson);
-      } else {
-        await api.post('/lessons/', newLesson);
-      }
-      setIsAddingLesson(false);
+      if (editingLessonId) await api.patch(`/lessons/${editingLessonId}`, newLesson);
+      else await api.post('/lessons/', newLesson);
+      
+      setIsAddingLesson(false); 
       setEditingLessonId(null);
+      setFormError('');
       setNewLesson({ title: '', status: 'draft', video_url: '', course_id: Number(id) });
-      fetchLessons(); // Atualiza sem recarregar a página
-    } catch (error) {
-      alert("Erro ao salvar aula.");
+      fetchLessons(); 
+    } catch (error) { 
+      setFormError("Erro ao salvar aula. Verifique os dados e tente novamente.");
     }
   };
 
-  // Função de Excluir Aula
-  const handleDeleteLesson = async (lessonId: number) => {
-    if (window.confirm("Deseja realmente excluir esta aula?")) {
-      try {
-        await api.delete(`/lessons/${lessonId}`);
-        fetchLessons();
-      } catch (error) {
-        alert("Erro ao excluir aula.");
-      }
+  const confirmDeleteLesson = async (lessonId: number) => {
+    try { 
+      await api.delete(`/lessons/${lessonId}`); 
+      setDeletingLessonId(null);
+      fetchLessons(); 
+    } catch (error) { 
+      console.error("Erro ao excluir aula"); 
     }
   };
 
-  // Prepara formulário de aula para edição
   const startEditLesson = (lesson: Lesson) => {
+    setFormError('');
+    setIsAddingLesson(false);
+    setDeletingLessonId(null);
     setEditingLessonId(lesson.id);
     setNewLesson({ title: lesson.title, status: lesson.status, video_url: lesson.video_url || '', course_id: Number(id) });
-    setIsAddingLesson(true);
+  };
+
+  const cancelEditOrCreate = () => {
+    setIsAddingLesson(false);
+    setEditingLessonId(null);
+    setFormError('');
+    setNewLesson({ title: '', status: 'draft', video_url: '', course_id: Number(id) });
   };
 
   useEffect(() => {
+    let isMounted = true; 
+
     const loadData = async () => {
       try {
-        // Busca do curso
         const courseRes = await api.get(`/courses/${id}`);
-        setCourse(courseRes.data);
-        
-        // Busca de aulas
+        if (isMounted) setCourse(courseRes.data);
         fetchLessons();
 
-        // Lógica de Cache para API Externa
         const cacheKeyInstructor = `@CourseSphere:instructor_${id}`;
         const cacheKeyStudents = `@CourseSphere:students_${id}`;
-        
         const savedInstructor = sessionStorage.getItem(cacheKeyInstructor);
         const savedStudents = sessionStorage.getItem(cacheKeyStudents);
 
         if (savedInstructor && savedStudents) {
-          setInstructor(JSON.parse(savedInstructor));
-          setAllStudents(JSON.parse(savedStudents));
+          if (isMounted) {
+            setInstructor(JSON.parse(savedInstructor));
+            setAllStudents(JSON.parse(savedStudents));
+          }
         } else {
           const externalRes = await fetch('https://randomuser.me/api/?results=51');
           const externalData = await externalRes.json();
-          const newInstructor = externalData.results[0];
-          const newStudents = externalData.results.slice(1);
-
-          setInstructor(newInstructor);
-          setAllStudents(newStudents);
-          sessionStorage.setItem(cacheKeyInstructor, JSON.stringify(newInstructor));
-          sessionStorage.setItem(cacheKeyStudents, JSON.stringify(newStudents));
+          if (isMounted) {
+            const checkCacheAgain = sessionStorage.getItem(cacheKeyInstructor);
+            if (!checkCacheAgain) {
+              setInstructor(externalData.results[0]);
+              setAllStudents(externalData.results.slice(1));
+              sessionStorage.setItem(cacheKeyInstructor, JSON.stringify(externalData.results[0]));
+              sessionStorage.setItem(cacheKeyStudents, JSON.stringify(externalData.results.slice(1)));
+            } else {
+              setInstructor(JSON.parse(checkCacheAgain));
+              setAllStudents(JSON.parse(sessionStorage.getItem(cacheKeyStudents) || '[]'));
+            }
+          }
         }
       } catch (error) {
         console.error("Erro ao carregar dados", error);
-      } finally {
-        setLoading(false);
+      } finally { 
+        if (isMounted) setLoading(false); 
       }
     };
-
     loadData();
+    return () => { isMounted = false; };
   }, [id, fetchLessons]);
 
-  if (loading) return <p>Carregando detalhes do curso...</p>;
-  if (!course) return <p>Curso não encontrado.</p>;
+  if (loading) return <p style={{textAlign: 'center', marginTop: '50px'}}>Carregando detalhes do curso...</p>;
+  if (!course) return <p style={{textAlign: 'center', marginTop: '50px'}}>Curso não encontrado.</p>;
+
+  // Componente Formulário para a Aula
+  const renderLessonForm = (isEdit = false) => (
+    <form className="crud-form" onSubmit={handleSaveLesson}>
+      <h3 style={{margin: 0}}>{isEdit ? 'Atualizar Aula' : 'Nova Aula'}</h3>
+      
+      {formError && <span className="inline-error">{formError}</span>}
+
+      <input className="form-input" type="text" placeholder="Título da Aula" required value={newLesson.title} onChange={e => setNewLesson({...newLesson, title: e.target.value})} />
+      <select className="form-input" value={newLesson.status} onChange={e => setNewLesson({...newLesson, status: e.target.value})}>
+        <option value="draft">Rascunho</option>
+        <option value="published">Publicada</option>
+      </select>
+      <input className="form-input" type="url" placeholder="URL do Vídeo (opcional)" value={newLesson.video_url} onChange={e => setNewLesson({...newLesson, video_url: e.target.value})} />
+      
+      <div style={{display: 'flex', gap: '10px', marginTop: '5px'}}>
+        <button className="btn-primary" type="submit">Salvar</button>
+        <button className="btn-outline" type="button" onClick={cancelEditOrCreate}>Cancelar</button>
+      </div>
+    </form>
+  );
 
   return (
-    <div style={{ maxWidth: '900px', margin: '40px auto', fontFamily: 'sans-serif', padding: '0 20px' }}>
-      <button onClick={() => navigate('/')}>← Voltar ao Dashboard</button>
+    <div className="course-details-container">
+      <button className="btn-back" onClick={() => navigate('/')}>← Voltar ao Dashboard</button>
 
-      <section style={{ marginTop: '20px', borderBottom: '2px solid #eee', paddingBottom: '20px' }}>
-        <h1>{course.name}</h1>
-        <p><strong>Descrição:</strong> {course.description || 'Sem descrição'}</p>
-        <p><strong>Período:</strong> {course.start_date} até {course.end_date}</p>
+      <section className="course-header-section">
+        <h1 className="course-main-title">{course.name}</h1>
+        <p className="course-info-text"><strong>Descrição:</strong> {course.description || 'Sem descrição'}</p>
+        <p className="course-info-text"><strong>Período:</strong> {course.start_date} até {course.end_date}</p>
 
         {instructor && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginTop: '20px', backgroundColor: '#f9f9f9', padding: '10px', borderRadius: '8px' }}>
-            <img src={instructor.picture.medium} alt="Instrutor" style={{ borderRadius: '50%', width: '60px' }} />
+          <div className="instructor-card">
+            <img src={instructor.picture.medium} alt="Instrutor" className="instructor-avatar" />
             <div>
-              <span style={{ fontSize: '12px', color: '#666', textTransform: 'uppercase' }}>Instrutor Convidado</span>
-              <h3 style={{ margin: 0 }}>{instructor.name.first} {instructor.name.last}</h3>
+              <span className="instructor-role">Instrutor Convidado</span>
+              <h3 className="instructor-name">{instructor.name.first} {instructor.name.last}</h3>
             </div>
           </div>
         )}
       </section>
 
-      <section style={{ marginTop: '30px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h2>Aulas</h2>
-          <select value={lessonStatusFilter} onChange={(e) => setLessonStatusFilter(e.target.value)}>
+      <section>
+        <div className="lessons-header">
+          <h2 className="section-title">Aulas</h2>
+          <select className="status-filter-select" value={lessonStatusFilter} onChange={(e) => setLessonStatusFilter(e.target.value)}>
             <option value="">Todos os status</option>
             <option value="published">Publicadas</option>
             <option value="draft">Rascunhos</option>
           </select>
         </div>
       
-        {/* Apenas o criador pode adicionar aulas */}
         {user?.id === course.creator_id && (
-          <div style={{ marginTop: '20px' }}>
-            <button onClick={() => { setIsAddingLesson(!isAddingLesson); setEditingLessonId(null); setNewLesson({ title: '', status: 'draft', video_url: '', course_id: Number(id) }); }}>
-              {isAddingLesson ? 'Cancelar' : '+ Adicionar Aula'}
-            </button>
-          
-            {isAddingLesson && (
-              <form onSubmit={handleSaveLesson} style={{ padding: '15px', border: '1px dashed #666', marginTop: '10px', borderRadius: '8px', display: 'grid', gap: '10px' }}>
-                <h3>{editingLessonId ? 'Editar Aula' : 'Nova Aula'}</h3>
-                <input type="text" placeholder="Título da Aula" required value={newLesson.title} onChange={e => setNewLesson({...newLesson, title: e.target.value})} />
-                <select value={newLesson.status} onChange={e => setNewLesson({...newLesson, status: e.target.value})}>
-                  <option value="draft">Rascunho</option>
-                  <option value="published">Publicada</option>
-                </select>
-                <input type="url" placeholder="URL do Vídeo (opcional)" value={newLesson.video_url} onChange={e => setNewLesson({...newLesson, video_url: e.target.value})} />
-                <button type="submit">Salvar Aula</button>
-              </form>
+          <div style={{ marginBottom: '20px' }}>
+            {/* Se NÃO estiver criando, mostra o botão de Nova Aula */}
+            {!isAddingLesson && (
+              <button className="btn-primary" onClick={() => { cancelEditOrCreate(); setIsAddingLesson(true); }}>
+                + Adicionar Aula
+              </button>
             )}
+          
+            {/* Formulário de Criação fica no topo da lista */}
+            {isAddingLesson && renderLessonForm(false)}
           </div>
         )}
       
-        <div style={{ marginTop: '20px' }}>
+        <div>
           {lessons.length === 0 ? (
             <p>Nenhuma aula cadastrada com este filtro.</p>
           ) : (
             lessons.map((lesson) => (
-              <div key={lesson.id} style={{ border: '1px solid #ddd', margin: '15px 0', padding: '20px', borderRadius: '8px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <div>
-                    <h3 style={{ margin: '0 0 10px 0' }}>{lesson.title}</h3>
-                    <span style={{ 
-                      padding: '4px 8px', borderRadius: '4px', fontSize: '12px', 
-                      backgroundColor: lesson.status === 'published' ? '#e6fffa' : '#fff5f5',
-                      color: lesson.status === 'published' ? '#2c7a7b' : '#c53030'
-                    }}>
-                      {lesson.status === 'published' ? 'Publicada' : 'Rascunho'}
-                    </span>
-                    {lesson.video_url && (
-                      <p style={{ fontSize: '14px', marginTop: '10px' }}>
-                        <a href={lesson.video_url} target="_blank" rel="noreferrer">Assistir Vídeo</a>
-                      </p>
+              <div key={lesson.id} className="lesson-card">
+                
+                {/* INLINE EDIT: Formulário Substitui o cabeçalho da aula */}
+                {editingLessonId === lesson.id ? (
+                  renderLessonForm(true)
+                ) : (
+                  // Visualização normal do cabeçalho da aula
+                  <div className="lesson-card-header">
+                    <div>
+                      <h3 className="lesson-title">{lesson.title}</h3>
+                      <span className={`badge ${lesson.status}`}>
+                        {lesson.status === 'published' ? 'Publicada' : 'Rascunho'}
+                      </span>
+                      <br/>
+                      {lesson.video_url && (
+                        <a className="watch-link" href={lesson.video_url} target="_blank" rel="noreferrer">Assistir Vídeo</a>
+                      )}
+                    </div>
+
+                    {user?.id === course.creator_id && (
+                      <div className="action-buttons">
+                        {/* INLINE DELETE */}
+                        {deletingLessonId === lesson.id ? (
+                          <div className="inline-confirm-box">
+                            <p className="inline-confirm-text">Excluir aula?</p>
+                            <div className="inline-confirm-actions">
+                              <button className="btn-danger" onClick={() => confirmDeleteLesson(lesson.id)}>Sim</button>
+                              <button className="btn-outline" onClick={() => setDeletingLessonId(null)}>Não</button>
+                            </div>
+                          </div>
+                        ) : (
+                          // Botões normais
+                          <>
+                            <button className="btn-outline" onClick={() => startEditLesson(lesson)}>Editar</button>
+                            <button className="btn-danger" onClick={() => { setDeletingLessonId(lesson.id); setEditingLessonId(null); }}>Excluir</button>
+                          </>
+                        )}
+                      </div>
                     )}
                   </div>
+                )}
 
-                  {/* Apenas o criador pode editar e excluir as aulas */}
-                  {user?.id === course.creator_id && (
-                    <div style={{ display: 'flex', gap: '10px' }}>
-                      <button onClick={() => startEditLesson(lesson)}>Editar</button>
-                      <button onClick={() => handleDeleteLesson(lesson.id)} style={{ backgroundColor: '#ff4d4f', color: 'white' }}>Excluir</button>
-                    </div>
-                  )}
-                </div>
-
-                {/* Lista de Alunos na Aula */}
-                <div style={{ marginTop: '20px' }}>
-                  <h4 style={{ fontSize: '14px', borderBottom: '1px solid #eee', paddingBottom: '5px' }}>Alunos nesta aula</h4>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '10px', marginTop: '10px' }}>
+                {/* Lista de Alunos */}
+                <div className="students-section">
+                  <h4 className="students-title">Alunos nesta aula</h4>
+                  <div className="students-grid">
                     {allStudents.slice(0, 25).map((student, idx) => (
-                      <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <img src={student.picture.thumbnail} alt="Avatar" style={{ borderRadius: '50%', width: '30px', height: '30px', objectFit: 'cover' }} />
-                        <span style={{ fontSize: '13px' }}>{student.name.first}</span>
+                      <div key={idx} className="student-item">
+                        <img src={student.picture.thumbnail} alt="Avatar" className="student-avatar" />
+                        <span className="student-name">{student.name.first}</span>
                       </div>
                     ))}
                   </div>

@@ -1,0 +1,107 @@
+:root {
+  --primary-color: #8b5cf6; --secondary-color: #c026d3; 
+  --bg-color: #f3f4f6; --card-bg: #ffffff; --text-dark: #1f2937;
+  --text-muted: #6b7280; --border-color: #e5e7eb;
+  --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.05);
+  --radius-md: 8px;
+  --status-published-bg: #ccfbf1; --status-published-text: #0f766e;
+  --status-draft-bg: #fef3c7; --status-draft-text: #b45309;
+}
+
+.course-details-container { max-width: 1000px; margin: 0 auto; padding: 30px 20px; font-family: sans-serif; color: var(--text-dark); }
+.btn-back { background: transparent; border: 1px solid var(--border-color); color: var(--text-dark); padding: 8px 12px; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; margin-bottom: 25px; transition: all 0.2s ease; font-weight: 600;}
+.btn-back:hover { background-color: #e5e7eb; }
+
+/* Cabeçalho */
+.course-header-section { border-bottom: 2px solid var(--border-color); padding-bottom: 20px; margin-bottom: 30px;}
+.course-main-title { font-size: 32px; font-weight: 800; margin: 0 0 15px 0; }
+.course-info-text { font-size: 16px; margin: 5px 0; color: var(--text-dark); }
+
+/* Instrutor */
+.instructor-card { background-color: #f9fafb; border-left: 4px solid var(--primary-color); border-radius: 0 var(--radius-md) var(--radius-md) 0; padding: 15px 20px; display: inline-flex; align-items: center; gap: 15px; margin-top: 20px; }
+.instructor-avatar { width: 50px; height: 50px; border-radius: 50%; border: 2px solid white; box-shadow: var(--shadow-sm); }
+.instructor-role { font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: bold; }
+.instructor-name { font-size: 16px; font-weight: 700; margin: 0; }
+
+/* Aulas Header e Formulario */
+.lessons-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.section-title { font-size: 24px; font-weight: 700; margin: 0; }
+.status-filter-select { padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 4px; outline: none; }
+
+/* Adicionado reutilização do form do dashboard */
+.crud-form { background: white; padding: 20px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); margin-bottom: 20px; display: grid; gap: 10px; border: 1px solid var(--border-color); }
+.form-input { padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; width: 100%; box-sizing: border-box; }
+.btn-primary { background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+
+/* Cards de Aula */
+.lesson-card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 20px; margin-bottom: 20px; box-shadow: var(--shadow-sm); }
+.lesson-card-header { display: flex; justify-content: space-between; align-items: flex-start; }
+.lesson-title { font-size: 20px; font-weight: 700; margin: 0 0 10px 0; }
+.badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; margin-bottom: 10px;}
+.badge.published { background-color: var(--status-published-bg); color: var(--status-published-text); }
+.badge.draft { background-color: var(--status-draft-bg); color: var(--status-draft-text); }
+.watch-link { display: inline-block; color: var(--primary-color); font-weight: 600; text-decoration: none; font-size: 14px; margin-top: 5px; }
+.watch-link:hover { text-decoration: underline; }
+
+/* Grid de Alunos */
+.students-section { margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--border-color); }
+.students-title { font-size: 14px; font-weight: 700; margin-bottom: 15px; }
+.students-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+.student-item { display: flex; align-items: center; gap: 8px; }
+.student-avatar { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; }
+.student-name { font-size: 13px; }
+
+/* Botoes de acao secundários */
+.action-buttons { display: flex; gap: 10px; }
+.btn-outline { background: transparent; border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 4px; cursor: pointer; }
+.btn-outline:hover { background: var(--bg-color); }
+.btn-danger { background-color: #fee2e2; border: 1px solid #fca5a5; color: #ef4444; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
+.btn-danger:hover { background-color: #ef4444; color: white; }
+/*MENSAGENS INLINE (Erros e Confirmação)*/
+
+.inline-error {
+  color: #ef4444;
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: -5px;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.inline-confirm-box {
+  background-color: #fef2f2;
+  border: 1px solid #fca5a5;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.inline-confirm-text {
+  color: #b91c1c;
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0;
+  text-align: center;
+}
+
+.inline-confirm-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Animação suave para não aparecer "do nada" */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.course-card .crud-form,
+.lesson-card .crud-form {
+  box-shadow: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
