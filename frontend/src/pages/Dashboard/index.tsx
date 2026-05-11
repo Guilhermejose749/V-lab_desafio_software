@@ -49,6 +49,17 @@ export default function Dashboard() {
   // Função unificada para Salvar (Criar ou Editar)
   const handleSaveCourse = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // validando a data de início e término antes de enviar para a API
+    const start = new Date(formData.start_date);
+    const end = new Date(formData.end_date);
+
+    if (end < start) {
+      alert("A data de término não pode ser anterior à data de início!");
+      return;
+    }
+    // ------------------------------------
+
     try {
       if (editingCourseId) {
         await api.patch(`/courses/${editingCourseId}`, formData);
@@ -58,9 +69,9 @@ export default function Dashboard() {
       setIsCreating(false);
       setEditingCourseId(null);
       setFormData({ name: '', description: '', start_date: '', end_date: '' });
-      fetchCourses(); // Atualiza a lista suavemente
+      fetchCourses();
     } catch (error) {
-      alert("Erro ao salvar curso. Verifique as datas (Data fim deve ser após a início).");
+      alert("Erro ao salvar curso no servidor.");
     }
   };
 
