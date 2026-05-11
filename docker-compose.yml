@@ -49,7 +49,7 @@ services:
       - ./backend/.env
     depends_on:
       - db
-    command: pytest -v
+    command: python -m pytest -v -s
     profiles:
       - test
   
