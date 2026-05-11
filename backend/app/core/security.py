@@ -4,10 +4,15 @@ from jose import jwt
 import bcrypt
 from app.core.config import settings
 
-def create_access_token(subject: Union[str, Any]) -> str:
-    """Gera o Token JWT assinado."""
+def create_access_token(subject: Union[str, Any], user_id: int = None) -> str:
+    """Gera o Token JWT assinado com o email e o ID do usuário."""
     expire = datetime.now(timezone.utc) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode = {"exp": expire, "sub": str(subject)}
+    
+    # ID do usuário no payload do token
+    if user_id:
+        to_encode["id"] = user_id
+        
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
     return encoded_jwt
 
