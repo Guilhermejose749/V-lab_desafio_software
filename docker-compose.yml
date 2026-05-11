@@ -39,6 +39,31 @@ services:
       - "5173:5173"
     depends_on:
       - backend
-
+  # Testes para Backend
+  backend_test:
+    build: ./backend
+    container_name: coursesphere_backend_test
+    volumes:
+      - ./backend:/app
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - db
+    command: pytest -v
+    profiles:
+      - test
+  
+  # Testes para Frontend
+  frontend_test:
+    build: ./frontend
+    container_name: coursesphere_frontend_test
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    command: npm run test:run
+    profiles:
+      - test
 volumes:
   pgdata:
