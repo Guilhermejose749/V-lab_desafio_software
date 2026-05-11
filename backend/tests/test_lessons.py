@@ -38,5 +38,5 @@ def test_delete_lesson_as_owner(client, owner_token, setup_lesson):
     assert response.status_code in [200, 204]
     
     # Validar se deletou buscando a aula
-    get_response = client.get(f"/api/lessons/{setup_lesson}")
+    get_response = client.get(f"/api/lessons/{setup_lesson}", headers=owner_token)
     assert get_response.status_code == 404

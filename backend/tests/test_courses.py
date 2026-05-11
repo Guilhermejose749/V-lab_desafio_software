@@ -41,6 +41,6 @@ def test_delete_course_as_owner(client, owner_token, setup_course):
     response = client.delete(f"/api/courses/{setup_course}", headers=owner_token)
     assert response.status_code in [200, 204]
     
-    # Verifica se realmente sumiu
-    get_response = client.get(f"/api/courses/{setup_course}")
+    # Verifica se realmente sumiu 
+    get_response = client.get(f"/api/courses/{setup_course}", headers=owner_token)
     assert get_response.status_code == 404
