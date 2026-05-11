@@ -1,5 +1,6 @@
 from sqlmodel import Session, select
 from app.models.course import Course, CourseCreate
+from sqlalchemy.orm import joinedload
 from typing import List, Optional
 
 def create_course(session: Session, course_in: CourseCreate, creator_id: int) -> Course:
@@ -12,7 +13,7 @@ def create_course(session: Session, course_in: CourseCreate, creator_id: int) ->
 
 def get_all_courses(session: Session, search: Optional[str] = None) -> List[Course]:
     """Retorna todos os cursos, com filtro opcional por nome."""
-    statement = select(Course)
+    statement = select(Course).options(joinedload(Course.creator))
     if search:
         statement = statement.where(Course.name.contains(search))
     return session.exec(statement).all()
