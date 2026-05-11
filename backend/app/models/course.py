@@ -25,6 +25,12 @@ class CourseRead(CourseBase):
     creator_id: int
     creator_email: str
 
+class CourseUpdate(SQLModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    start_date: Optional[date] = None
+    end_date: Optional[date] = None
+    
 class Course(CourseBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     creator_id: int = Field(foreign_key="user.id", ondelete="CASCADE")

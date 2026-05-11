@@ -16,6 +16,11 @@ class LessonCreate(LessonBase):
 class LessonRead(LessonBase):
     id: int
 
+class LessonUpdate(SQLModel):
+    title: Optional[str] = None
+    status: Optional[str] = None
+    video_url: Optional[str] = None
+
 class Lesson(LessonBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     # Cascata do curso para a aula
