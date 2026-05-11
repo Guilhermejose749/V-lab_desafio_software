@@ -2,6 +2,31 @@ import pytest
 import uuid
 from fastapi.testclient import TestClient
 from app.main import app
+from sqlmodel import SQLModel, Session, create_engine
+from sqlmodel.pool import StaticPool
+from app.db.database import get_session
+
+# ==========================================
+# CONFIGURAÇÃO DO BANCO DE DADOS DE TESTE
+# ==========================================
+# Cria um banco SQLite na memória RAM para testes
+sqlite_url = "sqlite://"
+test_engine = create_engine(
+    sqlite_url,
+    connect_args={"check_same_thread": False},
+    poolclass=StaticPool,
+)
+
+# Cria todas as tabelas dentro dessa memória
+SQLModel.metadata.create_all(test_engine)
+
+# Função que substitui a conexão real
+def get_test_session():
+    with Session(test_engine) as session:
+        yield session
+
+app.dependency_overrides[get_session] = get_test_session
+
 
 @pytest.fixture(scope="module")
 def client():
