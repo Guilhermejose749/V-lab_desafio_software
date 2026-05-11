@@ -14,7 +14,7 @@ def owner_token(client):
     email = f"owner_{uuid.uuid4()}@teste.com"
     
     # Tenta registrar
-    res_reg = client.post("/auth/register", json={
+    res_reg = client.post("/api/auth/register", json={
         "name": "Dono do Curso", 
         "email": email, 
         "password": "password123"

@@ -4,7 +4,7 @@ def test_create_lesson_as_course_owner(client, owner_token, setup_course):
         "status": "published",
         "course_id": setup_course
     }
-    response = client.post("/lessons/", json=payload, headers=owner_token)
+    response = client.post("/api/lessons/", json=payload, headers=owner_token)
     assert response.status_code in [200, 201]
     assert response.json()["title"] == "Introdução ao Teste"
 

@@ -5,7 +5,7 @@ def test_create_course_success(client, owner_token):
         "start_date": "2026-08-01",
         "end_date": "2026-08-30"
     }
-    response = client.post("/courses/", json=payload, headers=owner_token)
+    response = client.post("/api/courses/", json=payload, headers=owner_token)
     assert response.status_code in [200, 201]
     assert response.json()["name"] == "Curso de Python"
 
