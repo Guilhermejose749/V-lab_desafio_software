@@ -8,8 +8,9 @@
 .auth-wrapper {
   display: flex; justify-content: center; align-items: center; min-height: 100vh;
   /* Troque a URL abaixo pela sua imagem de fundo */
-  background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=2000&auto=format&fit=crop') center/cover no-repeat;
+  background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.4)), url('../../assets/background.png') center/cover no-repeat;
   font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  transition: all 0.5s ease;
 }
 
 .auth-card {
