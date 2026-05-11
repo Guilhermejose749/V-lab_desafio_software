@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session
 from typing import List, Optional
 from app.db.database import get_session
-from app.models.lesson import LessonCreate, LessonRead
+from app.models.lesson import LessonCreate, LessonRead, LessonUpdate
 from app.models.user import User
 from app.crud import crud_lesson, crud_course
 from app.api.deps import get_current_user
@@ -42,10 +42,22 @@ def read_lessons_for_course(
         
     return crud_lesson.get_lessons_by_course(session=session, course_id=course_id, status=status)
 
+@router.get("/{id}", response_model=LessonRead)
+def read_lesson(
+    id: int,
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_user)
+):
+    """Busca os detalhes de uma aula específica."""
+    db_lesson = crud_lesson.get_lesson_by_id(session=session, lesson_id=id)
+    if not db_lesson:
+        raise HTTPException(status_code=404, detail="Aula não encontrada.")
+    return db_lesson
+
 @router.patch("/{id}", response_model=LessonRead)
 def update_lesson(
     id: int,
-    lesson_in: LessonCreate,
+    lesson_in: LessonUpdate,
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_user)
 ):

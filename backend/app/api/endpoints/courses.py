@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session
 from typing import List, Optional
 from app.db.database import get_session
-from app.models.course import CourseCreate, CourseRead
+from app.models.course import CourseCreate, CourseRead, CourseUpdate
 from app.models.user import User
 from app.crud import crud_course
 from app.api.deps import get_current_user
@@ -42,7 +42,7 @@ def read_course(
 @router.patch("/{id}", response_model=CourseRead)
 def update_course(
     id: int, 
-    course_in: CourseCreate, 
+    course_in: CourseUpdate, 
     session: Session = Depends(get_session), 
     current_user: User = Depends(get_current_user)
 ):
