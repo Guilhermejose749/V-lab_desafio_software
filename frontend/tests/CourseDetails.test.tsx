@@ -5,13 +5,13 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import CourseDetails from '../src/pages/CourseDetails';
 import { AuthContext } from '../src/contexts/AuthContext';
 import api from '../src/services/api';
-
+import React from 'react';
 vi.mock('../src/services/api');
 
 // Mock do Fetch global para a RandomUser API
 global.fetch = vi.fn(() =>
   Promise.resolve({
-    json: () => Promise.resolve({ results: [{ name: { first: 'João', last: 'Silva' }, picture: { medium: '', thumbnail: '' } }] }),
+    json: () => Promise.resolve({ results: [{ name: { first: 'João', last: 'Silva' }, picture: { medium: 'https://via.placeholder.com/50', thumbnail: 'https://via.placeholder.com/50' } }] }),
   })
 ) as any;
 

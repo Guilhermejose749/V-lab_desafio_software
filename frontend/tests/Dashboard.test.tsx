@@ -5,7 +5,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import Dashboard from '../src/pages/Dashboard';
 import { AuthContext } from '../src/contexts/AuthContext';
 import api from '../src/services/api';
-
+import React from 'react';
 vi.mock('../src/services/api');
 
 const mockUser = { id: 1, email: 'dono@gmail.com' };

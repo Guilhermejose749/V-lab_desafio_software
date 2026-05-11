@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import Register from '../src/pages/Register';
 import api from '../src/services/api';
+import React from 'react';
 
 vi.mock('../src/services/api');
 
