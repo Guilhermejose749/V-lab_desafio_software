@@ -2,28 +2,7 @@ import React, { useEffect, useState, useContext, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import { AuthContext } from '../../contexts/AuthContext';
-
-interface Lesson {
-  id: number;
-  title: string;
-  status: string;
-  video_url?: string;
-  course_id: number;
-}
-
-interface Course {
-  id: number;
-  name: string;
-  description: string;
-  start_date: string;
-  end_date: string;
-  creator_id: number;
-}
-
-interface ExternalUser {
-  name: { first: string; last: string };
-  picture: { medium: string; thumbnail: string };
-}
+import { type Course, type Lesson, type ExternalUser } from '../../interfaces';
 
 export default function CourseDetails() {
   const { id } = useParams<{ id: string }>();

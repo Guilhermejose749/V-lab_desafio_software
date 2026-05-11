@@ -2,15 +2,7 @@ import React, { useEffect, useState, useContext, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import { AuthContext } from '../../contexts/AuthContext';
-
-interface Course {
-  id: number;
-  name: string;
-  description: string;
-  start_date: string;
-  end_date: string;
-  creator_id: number;
-}
+import { type Course } from '../../interfaces';
 
 export default function Dashboard() {
  
@@ -23,7 +15,7 @@ export default function Dashboard() {
   const [showOnlyMine, setShowOnlyMine] = useState(false);
   
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 3; 
+  const itemsPerPage = 5; 
   
   const navigate = useNavigate();
   
@@ -185,32 +177,44 @@ export default function Dashboard() {
       </div>
 
       {/* Lista de Cursos e Paginação */}
-      <div style={{ display: 'grid', gap: '15px', minHeight: '300px' }}>
-        {currentCourses.length === 0 ? (
-          <p>Nenhum curso encontrado com esses filtros.</p>
-        ) : (
-          currentCourses.map(course => (
-            <div key={course.id} style={{ border: '1px solid #ccc', padding: '15px', borderRadius: '8px', display: 'flex', justifyContent: 'space-between' }}>
-              <div>
-                <h3 style={{ margin: '0 0 10px 0' }}>{course.name}</h3>
-                <p style={{ margin: 0, fontSize: '14px', color: '#666' }}>
-                  Início: {course.start_date} | Fim: {course.end_date}
-                </p>
-                {user?.id === course.creator_id && <span style={{ fontSize: '12px', color: 'blue', fontWeight: 'bold' }}>⭐ Seu curso</span>}
-              </div>
+      <div style={{ display: 'grid', gap: '15px', minHeight: '300px', alignContent: 'start'}}>
+        {currentCourses.map(course => (
+          <div key={course.id} style={{ 
+            border: '1px solid #ccc', padding: '20px', borderRadius: '8px', 
+            display: 'flex', justifyContent: 'space-between', backgroundColor: '#fff'
+          }}>
+            <div style={{ flex: 1 }}>
+              <h3 style={{ margin: '0 0 5px 0' }}>
+                {course.name} {user?.id === course.creator_id && '⭐'} 
+              </h3>
               
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-                <button onClick={() => navigate(`/courses/${course.id}`)}>Ver Detalhes</button>
-                {user?.id === course.creator_id && (
-                  <div style={{ display: 'flex', gap: '5px' }}>
-                    <button onClick={() => startEdit(course)} style={{ flex: 1 }}>Editar</button>
-                    <button onClick={() => handleDelete(course.id)} style={{ flex: 1, backgroundColor: '#ff4d4f', color: 'white', border: 'none', borderRadius: '4px' }}>Excluir</button>
-                  </div>
-                )}
+              <p style={{ margin: '0 0 10px 0', fontSize: '14px', color: '#666' }}>
+                {course.description || 'Sem descrição.'}
+              </p>
+
+              <div style={{ fontSize: '13px', color: '#888' }}>
+                <p style={{ margin: '2px 0' }}>📅 {course.start_date} até {course.end_date}</p>
+                <p style={{ margin: '2px 0' }}>👤 <strong>Instrutor:</strong> {course.creator_email}</p>
               </div>
             </div>
-          ))
-        )}
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', justifyContent: 'center' }}>
+              <button onClick={() => navigate(`/courses/${course.id}`)}>Ver Detalhes</button>
+              
+              {user?.id === course.creator_id && (
+                <div style={{ display: 'flex', gap: '5px' }}>
+                  <button onClick={() => startEdit(course)} style={{ flex: 1 }}>Editar</button>
+                  <button 
+                    onClick={() => handleDelete(course.id)} 
+                    style={{ flex: 1, backgroundColor: '#ff4d4f', color: 'white', border: 'none', borderRadius: '4px' }}
+                  >
+                    Excluir
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
       </div>
 
       {totalPages > 1 && (
