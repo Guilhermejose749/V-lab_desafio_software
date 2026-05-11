@@ -1,6 +1,7 @@
 from typing import Optional, List, TYPE_CHECKING
 from sqlmodel import SQLModel, Field, Relationship
 from datetime import date
+from pydantic import model_validator
 
 if TYPE_CHECKING:
     from .user import User
@@ -12,8 +13,12 @@ class CourseBase(SQLModel):
     start_date: date
     end_date: date
 
-class CourseCreate(CourseBase):
-    pass
+class CourseCreate(CourseBase):    
+    @model_validator(mode='after')
+    def check_dates(self):
+        if self.end_date < self.start_date:
+            raise ValueError("A data de término não pode ser anterior à data de início")
+        return self
 
 class CourseRead(CourseBase):
     id: int
