@@ -10,12 +10,14 @@ export default function Register() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState('');
   
   const navigate = useNavigate();
 
   const handleRegister = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
+    setSuccess('');
     
     if (password.length < 6) {
       setError('A senha deve ter pelo menos 6 caracteres.');
@@ -26,13 +28,13 @@ export default function Register() {
 
     try {
       await api.post('/auth/register', { name, email, password });
-      alert('Usuário criado com sucesso! Faça login para continuar.');
-      navigate('/login');
+      setSuccess('Usuário criado com sucesso! Redirecionando...');
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Erro ao registrar usuário.');
-    } finally {
-      setLoading(false);
-    }
+    setLoading(false); }
   };
 
   return (
@@ -40,44 +42,53 @@ export default function Register() {
       <div className="auth-card">
         <h2 className="auth-title">Registrar</h2>
         
-        <p className="error-message">{error}</p>
+        {/* Mensagens de Feedback */}
+        {error && <p className="error-message">{error}</p>}
+        {success && <p className="success-message">{success}</p>}
         
-        <form className="auth-form" onSubmit={handleRegister}>
-          <div className="input-wrapper">
-            <input 
-              className="auth-input"
-              type="text" 
-              placeholder="Seu nome completo" 
-              value={name} 
-              onChange={(e) => setName(e.target.value)} 
-              required 
-            />
+        {!success ? (
+          <form className="auth-form" onSubmit={handleRegister}>
+            <div className="input-wrapper">
+              <input 
+                className="auth-input"
+                type="text" 
+                placeholder="Seu nome completo" 
+                value={name} 
+                onChange={(e) => setName(e.target.value)} 
+                required 
+              />
+            </div>
+            <div className="input-wrapper">
+              <input 
+                className="auth-input"
+                type="email" 
+                placeholder="Seu email" 
+                value={email} 
+                onChange={(e) => setEmail(e.target.value)} 
+                required 
+              />
+            </div>
+            <div className={`input-wrapper ${error ? 'has-error' : ''}`}>
+              <input 
+                className="auth-input"
+                type="password" 
+                placeholder="Sua senha (min 6 caracteres)" 
+                value={password} 
+                onChange={(e) => setPassword(e.target.value)} 
+                required 
+                minLength={6}
+              />
+            </div>
+            <button className="auth-submit-btn" type="submit" disabled={loading}>
+              {loading ? 'Cadastrando...' : 'Registrar'}
+            </button>
+          </form>
+        ) : (
+          <div className="loader-container">
+            {/* Um simples spinner ou ícone de check pode ir aqui */}
+            <div className="simple-loader"></div>
           </div>
-          <div className="input-wrapper">
-            <input 
-              className="auth-input"
-              type="email" 
-              placeholder="Seu email" 
-              value={email} 
-              onChange={(e) => setEmail(e.target.value)} 
-              required 
-            />
-          </div>
-          <div className={`input-wrapper ${error ? 'has-error' : ''}`}>
-            <input 
-              className="auth-input"
-              type="password" 
-              placeholder="Sua senha (min 6 caracteres)" 
-              value={password} 
-              onChange={(e) => setPassword(e.target.value)} 
-              required 
-              minLength={6}
-            />
-          </div>
-          <button className="auth-submit-btn" type="submit" disabled={loading}>
-            {loading ? 'Cadastrando...' : 'Registrar'}
-          </button>
-        </form>
+        )}
 
         <p className="auth-footer-link">
           Já tem uma conta? <Link to="/login">Voltar para o Login</Link>
