@@ -68,6 +68,62 @@ docker-compose up --build
 * **Backend (FastAPI)**: http://localhost:8000
 * **Frontend (Vite)**: http://localhost:5173
 
+## 4.1 Instruções de Execução Local (Sem Docker)
+
+Caso opte por executar o projeto diretamente no sistema operacional, é necessário possuir o **Python 3**, **Node.js** e uma instância do **PostgreSQL** rodando localmente.
+
+### Configuração do Backend
+
+Abra um terminal na raiz do projeto e navegue até o diretório do backend:
+```bash
+cd backend
+```
+
+Crie e ative o ambiente virtual de acordo com o seu sistema operacional:
+
+* **Windows**:
+```bash
+python -m venv venv
+venv\Scripts\activate
+```
+
+* **Mac / Linux**:
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+Com o ambiente ativado, instale as dependências listadas no arquivo de requisitos:
+```bash
+pip install -r requirements.txt
+```
+
+Configure as variáveis de ambiente criando o arquivo **.env** (baseado no **.env.example**). Certifique-se de que a variável **DATABASE_URL** esteja apontando para o seu banco de dados **PostgreSQL** local.
+
+Inicie o servidor do backend utilizando o **Uvicorn**:
+```bash
+uvicorn app.main:app --reload
+```
+
+### Configuração do Frontend
+
+Abra um novo terminal na raiz do projeto e navegue até o diretório do frontend:
+```bash
+cd frontend
+```
+
+Instale as dependências do projeto através do **NPM**:
+```bash
+npm install
+```
+
+Inicie o servidor de desenvolvimento do **Vite**:
+```bash
+npm run dev
+```
+
+Após executar ambos os comandos, o backend estará operando em **http://localhost:8000** e o frontend estará acessível em **http://localhost:5173**.
+
 ## 5. Execução de Testes Automatizados
 
 O projeto utiliza **Docker Profiles** para isolar e executar a suite de testes, garantindo que o ambiente de teste não interfira nos dados de desenvolvimento.
