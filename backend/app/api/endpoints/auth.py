@@ -5,6 +5,7 @@ from app.models.user import UserCreate, UserRead
 from app.crud.crud_user import get_user_by_email, create_user
 from fastapi.security import OAuth2PasswordRequestForm
 from app.core.security import verify_password, create_access_token
+from app.api.deps import get_current_user
 router = APIRouter()
 
 
@@ -44,3 +45,15 @@ def login(
     
     access_token = create_access_token(subject=user.email, user_id=user.id)
     return {"access_token": access_token, "token_type": "bearer"}
+
+@router.delete("/me", status_code=status.HTTP_204_NO_CONTENT)
+def delete_my_account(
+    session: Session = Depends(get_session), 
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Apaga a conta do utilizador logado e tudo o que estiver ligado a ela (Cursos e Aulas).
+    """
+    session.delete(current_user)
+    session.commit()
+    return None

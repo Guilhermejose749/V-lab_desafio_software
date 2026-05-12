@@ -20,4 +20,4 @@ class User(UserBase, table=True):
     hashed_password: str = Field(nullable=False)
     
     # Relacionamento: Um usuário pode ser criador de vários cursos 
-    courses: List["Course"] = Relationship(back_populates="creator")
+    courses: List["Course"] = Relationship(back_populates="creator", cascade_delete=True)
