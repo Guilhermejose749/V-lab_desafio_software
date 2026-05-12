@@ -42,9 +42,9 @@ O projeto cumpre integralmente os requisitos funcionais mínimos e incorpora dif
 ---
 ### Visualização do Banco de Dados (Beekeeper Studio)
 >Estrutura das tabelas e relacionamentos (User, Course, Lesson).
-> ![Estrutura do user](docs\user.png)
-> ![Estrutura do course](docs\course.png)
-> ![Estrutura do lesson](docs\lessons.png)
+> ![Estrutura do user](docs/user.png)
+> ![Estrutura do course](docs/course.png)
+> ![Estrutura do lesson](docs/lessons.png)
 ---
 
 ## 4. Instruções de Instalação e Execução (Via Docker)
@@ -98,9 +98,9 @@ docker exec -it coursesphere_backend python -m app.db.seed
 ---
 ### Visualização de Dados Populados (Beekeeper Studio)
 > Tabela de usuários,cursos e lessons preenchida no Beekeeper.
-> ![Estrutura do user](docs\user_seed.png)
-> ![Estrutura do course](docs\course_seed.png)
-> ![Estrutura do lesson](docs\lesson_seed.png)
+> ![Estrutura do user](docs/user_seed.png)
+> ![Estrutura do course](docs/course_seed.png)
+> ![Estrutura do lesson](docs/lesson_seed.png)
 ---
 
 ## 7. Deploy e Endpoints
