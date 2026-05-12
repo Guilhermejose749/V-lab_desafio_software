@@ -42,9 +42,9 @@ O projeto cumpre integralmente os requisitos funcionais mínimos e incorpora dif
 ---
 ### Visualização do Banco de Dados (Beekeeper Studio)
 >Estrutura das tabelas e relacionamentos (User, Course, Lesson).
-> ![Estrutura do user](docs\user.png)
-> ![Estrutura do course](docs\course.png)
-> ![Estrutura do lesson](docs\lessons.png)
+> ![Estrutura do user](docs/user.png)
+> ![Estrutura do course](docs/course.png)
+> ![Estrutura do lesson](docs/lessons.png)
 ---
 
 ## 4. Instruções de Instalação e Execução (Via Docker)
@@ -67,6 +67,62 @@ docker-compose up --build
 **Portas Padrão**:
 * **Backend (FastAPI)**: http://localhost:8000
 * **Frontend (Vite)**: http://localhost:5173
+
+## 4.1 Instruções de Execução Local (Sem Docker)
+
+Caso opte por executar o projeto diretamente no sistema operacional, é necessário possuir o **Python 3**, **Node.js** e uma instância do **PostgreSQL** rodando localmente.
+
+### Configuração do Backend
+
+Abra um terminal na raiz do projeto e navegue até o diretório do backend:
+```bash
+cd backend
+```
+
+Crie e ative o ambiente virtual de acordo com o seu sistema operacional:
+
+* **Windows**:
+```bash
+python -m venv venv
+venv\Scripts\activate
+```
+
+* **Mac / Linux**:
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+Com o ambiente ativado, instale as dependências listadas no arquivo de requisitos:
+```bash
+pip install -r requirements.txt
+```
+
+Configure as variáveis de ambiente criando o arquivo **.env** (baseado no **.env.example**). Certifique-se de que a variável **DATABASE_URL** esteja apontando para o seu banco de dados **PostgreSQL** local.
+
+Inicie o servidor do backend utilizando o **Uvicorn**:
+```bash
+uvicorn app.main:app --reload
+```
+
+### Configuração do Frontend
+
+Abra um novo terminal na raiz do projeto e navegue até o diretório do frontend:
+```bash
+cd frontend
+```
+
+Instale as dependências do projeto através do **NPM**:
+```bash
+npm install
+```
+
+Inicie o servidor de desenvolvimento do **Vite**:
+```bash
+npm run dev
+```
+
+Após executar ambos os comandos, o backend estará operando em **http://localhost:8000** e o frontend estará acessível em **http://localhost:5173**.
 
 ## 5. Execução de Testes Automatizados
 
@@ -98,9 +154,9 @@ docker exec -it coursesphere_backend python -m app.db.seed
 ---
 ### Visualização de Dados Populados (Beekeeper Studio)
 > Tabela de usuários,cursos e lessons preenchida no Beekeeper.
-> ![Estrutura do user](docs\user_seed.png)
-> ![Estrutura do course](docs\course_seed.png)
-> ![Estrutura do lesson](docs\lesson_seed.png)
+> ![Estrutura do user](docs/user_seed.png)
+> ![Estrutura do course](docs/course_seed.png)
+> ![Estrutura do lesson](docs/lesson_seed.png)
 ---
 
 ## 7. Deploy e Endpoints
