@@ -4,12 +4,10 @@ import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-// 1. Como estamos na pasta raiz/tests, precisamos entrar no /src/ primeiro
 import Login from '../src/pages/Login';
 import { AuthContext } from '../src/contexts/AuthContext';
 import api from '../src/services/api';
 
-// 2. O caminho do mock fica EXATAMENTE igual ao import da api ali em cima!
 vi.mock('../src/services/api', () => ({
   default: {
     post: vi.fn(),

@@ -24,7 +24,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const token = localStorage.getItem('@CourseSphere:token');
     if (token) {
       try {
-        // 2. Ensinamos o jwtDecode que o token agora tem 'sub' (email) e 'id'
         const decoded = jwtDecode<{ sub: string; id: number }>(token);
         setUser({ email: decoded.sub, id: decoded.id });
       } catch (error) {

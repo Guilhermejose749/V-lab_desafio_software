@@ -22,7 +22,6 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 def get_password_hash(password: str) -> str:
     """Gera o hash criptografado da senha."""
-    # Gera o "salt" (tempero de segurança) e depois o hash
     salt = bcrypt.gensalt()
     hashed_bytes = bcrypt.hashpw(password.encode('utf-8'), salt)
     

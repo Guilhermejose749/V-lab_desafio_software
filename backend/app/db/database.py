@@ -2,7 +2,6 @@ from sqlmodel import create_engine, Session, SQLModel
 from app.core.config import settings
 
 # Criação do Engine do banco de dados. 
-# O parâmetro echo=True é útil no desenvolvimento para ver as queries SQL no terminal.
 engine = create_engine(settings.DATABASE_URL, echo=True)
 
 def get_session():
